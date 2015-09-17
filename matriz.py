@@ -4,7 +4,7 @@ class matriz:
  def __init__(self,rmatriz):
   rmatriz = self.asignar_matriz(rmatriz)
   if self.isvalida(rmatriz):
-   self.matriz = rmatriz
+   self.__matriz = rmatriz
   else:
    raise Exception('Datos incorrectos')
    
@@ -27,7 +27,7 @@ class matriz:
    return True
   else:
    return False
-  
+   
  def isElemValido(self,rmatriz):
   if self.igual_len(rmatriz):
    for fila in rmatriz:
@@ -94,35 +94,20 @@ class matriz:
   
  def isneg(self,variable):
   return variable<0
-  
- def det_matriz(self,rmatriz):
-  if rmatriz==-1:
-   if isinstance(self,matriz):
-    return self.matriz[:]
-   else:
-    raise Exception('Falta especificar la matriz')
-  else:
-   rmatriz = self.asignar_matriz(rmatriz)
-   if self.isvalida(rmatriz):
-    return rmatriz[:]
-   else:
-    raise Exception('Matriz incompatible')
 	
- def hasfloat(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
-  for fila in rmatriz:
+ def hasfloat(self):
+  for fila in self.__matriz:
    for elemento in fila:
     if self.isfloat(elemento):
 	 return True
   return False
 	
- def mayor_nums(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
-  use_round=self.hasfloat(rmatriz)
+ def mayor_nums(self):
+  use_round=self.hasfloat()
   mayor=[]
-  for i in rmatriz[0]:
+  for i in self.__matriz[0]:
    mayor.append(0)
-  for fila in rmatriz:
+  for fila in self.__matriz:
    for i in range(len(fila)):
     length=len(str(abs(round(fila[i],4)))) if use_round else len(str(abs(fila[i])))
     if length>mayor[i]:
@@ -131,28 +116,27 @@ class matriz:
   
  def inicializar(self,other):
   matriz=[]
-  lenFila = len(other.matriz[0])
-  for fila in self.matriz:
+  lenFila = len(other.__matriz[0])
+  for fila in self.__matriz:
    matriz.append([0]*lenFila)
   return matriz[:]
   
  def isdimension_valida(self,other,operacion):
   if operacion=='*' or operacion=='/':
-   return len(self.matriz[0]) == len(other.matriz)
+   return len(self.__matriz[0]) == len(other.__matriz)
   elif operacion=='+' or operacion=='-':
-   return len(self.matriz) == len(other.matriz) and len(self.matriz[0]) == len(other.matriz[0])
+   return len(self.__matriz) == len(other.__matriz) and len(self.__matriz[0]) == len(other.__matriz[0])
   
  def crear_matriz_identidad(self):
   matriz=[]
-  for i in range(len(self.matriz)):
+  for i in range(len(self.__matriz)):
    matriz.append([])
-   for j in range(len(self.matriz[i])):
+   for j in range(len(self.__matriz[i])):
     matriz[i].append(1) if i==j else matriz[i].append(0)
   return matriz[:]
   
- def is_square(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
-  return len(rmatriz) == len(rmatriz[0])
+ def is_square(self):
+  return len(self.__matriz) == len(self.__matriz[0])
   
  def inf(self):
   return float('inf')
@@ -163,21 +147,19 @@ class matriz:
  def isother_valido(self,other):
   return self.isint(other) or self.islong(other) or self.isfloat(other) or self.isfrac(other)
   
- def transpuesta(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
+ def transpuesta(self):
   resultado=[]
-  for i in range(len(rmatriz[0])):
+  for i in range(len(self.__matriz[0])):
    resultado.append([])
-   for j in range(len(rmatriz)):
-    resultado[i].append(rmatriz[j][i])
+   for j in range(len(self.__matriz)):
+    resultado[i].append(self.__matriz[j][i])
   return matriz(resultado[:])
   
- def inv(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
+ def inv(self):
   if self.is_square():
    matriz_copy=[]
-   for i in range(len(rmatriz)):
-    matriz_copy.append(rmatriz[i][:])
+   for i in range(len(self.__matriz)):
+    matriz_copy.append(self.__matriz[i][:])
     matriz_identidad = self.crear_matriz_identidad()
    for i in range(len(matriz_copy)):
     dividendo = float(matriz_copy[i][i])
@@ -197,15 +179,14 @@ class matriz:
   else:
    raise Exception('Matrix must be square')
    
- def det(self,rmatriz=-1):
-  rmatriz=self.det_matriz(rmatriz)
+ def det(self):
   if self.is_square():
-   length,lim,sum1,sum2=len(rmatriz),len(rmatriz)-1,0,0
+   length,lim,sum1,sum2=len(self.__matriz),len(self.__matriz)-1,0,0
    for i in range(length if length > 2 else 1):
     mult1,mult2=1,1
     for j in range(length):
-	 mult1*=rmatriz[j][(j+i)%length]
-	 mult2*=rmatriz[j][(lim+i-j)%length]
+	 mult1*=self.__matriz[j][(j+i)%length]
+	 mult2*=self.__matriz[j][(lim+i-j)%length]
     sum1+=mult1
     sum2+=mult2
    return sum1-sum2
@@ -223,7 +204,7 @@ class matriz:
    return float('inf')
   else:
    return num1/float(num2)
-  
+   
  def sumar(self,num1,num2):
   return num1+num2
   
@@ -233,36 +214,36 @@ class matriz:
  def calcular(self,other,operador):
   switch={'**':self.potenciar,'*':self.multiplicar,'/':self.dividir,'+':self.sumar,'-':self.restar}
   if isinstance(other,matriz) or self.islist(other) or self.istuple(other):
-   matriz_other=matriz(self.det_matriz(other)) if self.islist(other) or self.istuple(other) else other
+   matriz_other=matriz(other) if self.islist(other) or self.istuple(other) else other
    if self.isdimension_valida(matriz_other,operador):
     resultado=matriz(self.inicializar(matriz_other))
-    for i in range(len(resultado.matriz)):
-	 for j in range(len(resultado.matriz[i])):
+    for i in range(len(resultado.__matriz)):
+	 for j in range(len(resultado.__matriz[i])):
 	  if operador=='*':
-	   for k in range(len(self.matriz[i])):
-	    resultado.matriz[i][j]+=switch[operador](self.matriz[i][k],matriz_other[k][j])
+	   for k in range(len(self.__matriz[i])):
+	    resultado.__matriz[i][j]+=switch[operador](self.__matriz[i][k],matriz_other[k][j])
 	  elif operador=='+' or operador=='-':
-	   resultado.matriz[i][j]=switch[operador](self.matriz[i][j],matriz_other[i][j])
+	   resultado.__matriz[i][j]=switch[operador](self.__matriz[i][j],matriz_other[i][j])
     return resultado
    else:
     raise Exception('Inner matrix dimensions must agree')
   elif self.isother_valido(other):
    resultado=matriz(self.inicializar(self))
-   for i in range(len(resultado.matriz)):
-    for j in range(len(resultado.matriz[i])):
-	 resultado.matriz[i][j]=switch[operador](self.matriz[i][j],other)
+   for i in range(len(resultado.__matriz)):
+    for j in range(len(resultado.__matriz[i])):
+	 resultado.__matriz[i][j]=switch[operador](self.__matriz[i][j],other)
    return resultado
   else:
    raise TypeError
    
  def __str__(self):
-  if self.isvacia(self.matriz[0]):
+  if self.isvacia(self.__matriz[0]):
    return '\n[]\n'
   else:
    use_round=self.hasfloat()
    cadena='\n'
    mayor=self.mayor_nums()
-   for fila in self.matriz:
+   for fila in self.__matriz:
     for i in range(len(fila)):
 	 if self.isneg(fila[i]):
 	  elemento=str(abs(round(fila[i],4))).ljust(mayor[i],'0') if use_round else str(abs(fila[i])).ljust(mayor[i],' ')
@@ -275,14 +256,14 @@ class matriz:
    
  def __getitem__(self,key):
   try:
-   return self.matriz[key]
+   return self.__matriz[key]
   except IndexError, ex:
    print "IndexError:", ex
   except TypeError, ex:
    print "TypeError:", ex
    
  def __len__(self):
-  return len(self.matriz)
+  return len(self.__matriz)
   
  def __calcular_pow(self,matriz_self,matriz_other):
   if len(matriz_self[0]) == len(matriz_other):
@@ -312,7 +293,7 @@ class matriz:
 	 raise TypeError, 'unsupported operand type for **: '+str(type(other))
    else:
     raise Exception('Inputs must be  a square matrix')
-	
+ 
  def __mul__(self,other):
   return self.calcular(other,'*')
    
@@ -326,9 +307,9 @@ class matriz:
   if self.isother_valido(other):
    matriz_self = self.inv()
    resultado=matriz(self.inicializar(matriz_self))
-   for i in range(len(resultado.matriz)):
-    for j in range(len(resultado.matriz[i])):
-	 resultado.matriz[i][j]=matriz_self[i][j]*other
+   for i in range(len(resultado.__matriz)):
+    for j in range(len(resultado.__matriz[i])):
+	 resultado.__matriz[i][j]=matriz_self[i][j]*other
    return resultado
   else:
    raise TypeError
@@ -344,29 +325,29 @@ class matriz:
   
  def __rsub__(self,other):
   if isinstance(other,matriz) or self.islist(other) or self.istuple(other):
-   matriz_other=matriz(self.det_matriz(other)) if self.islist(other) or self.istuple(other) else other
+   matriz_other=matriz(other) if self.islist(other) or self.istuple(other) else other
    if self.isdimension_valida(matriz_other,'-'):
     resultado=matriz(self.inicializar(matriz_other))
-    for i in range(len(resultado.matriz)):
-	 for j in range(len(resultado.matriz[i])):
-	  resultado.matriz[i][j]=self.sumar(self.matriz[i][j]*-1,matriz_other[i][j])
+    for i in range(len(resultado.__matriz)):
+	 for j in range(len(resultado.__matriz[i])):
+	  resultado.__matriz[i][j]=self.sumar(self.__matriz[i][j]*-1,matriz_other[i][j])
     return resultado
    else:
     raise Exception('Inner matrix dimensions must agree')
   elif self.isother_valido(other):
    resultado=matriz(self.inicializar(self))
-   for i in range(len(resultado.matriz)):
-    for j in range(len(resultado.matriz[i])):
-	 resultado.matriz[i][j]=self.sumar(self.matriz[i][j]*-1,other)
+   for i in range(len(resultado.__matriz)):
+    for j in range(len(resultado.__matriz[i])):
+	 resultado.__matriz[i][j]=self.sumar(self.__matriz[i][j]*-1,other)
    return resultado
   else:
    raise TypeError
-  
-  
+
+   
 class eq(matriz):
  def __init__(self,coef,resul,var='x'):
   matriz.__init__(self,coef)
-  var = self.det_vars(var,len(self.matriz[0]))
+  var = self.det_vars(var,len(self._matriz__matriz[0]))
   if self.is_square():
    if self.iseq_valida(var,resul):
     self.resul = self.asignar_resul(resul)
@@ -377,8 +358,8 @@ class eq(matriz):
    raise Exception('Coef\'s matrix must be square')
  
  def iseq_valida(self,var,resul):
-  if self.isvalido_resul(resul) and len(self.matriz)==len(resul):
-   return True if self.isvalido_var(var) and len(self.matriz[0])==len(var) else False
+  if self.isvalido_resul(resul) and len(self._matriz__matriz)==len(resul):
+   return True if self.isvalido_var(var) and len(self._matriz__matriz[0])==len(var) else False
   else:
    return False
 	
@@ -419,24 +400,21 @@ class eq(matriz):
   return type(variable) == str
   
  def solve(self):
-  matriz_copy=[]
-  for i in range(len(self.matriz)):
-   matriz_copy.append(self.matriz[i][:])
-  inversa=self.inv(matriz_copy)
-  inv_x_resul=inversa*self.resul
+  inversa=self.inv()
+  inv_x_resul=inversa*self.resul[:]
   resultado=[]
-  for elemento in inv_x_resul.matriz:
+  for elemento in inv_x_resul[:]:
    resultado.append(round(elemento[0],12))
   return resultado[:]
   
  def __str__(self):
   cadena='\n'
   mayor=self.mayor_nums()
-  for i in range(len(self.matriz)):
-   for j in range(len(self.matriz[i])):
-    if self.isneg(self.matriz[i][j]):
-	 cadena+=('-' if j==0 else ' - ')+(str(abs(self.matriz[i][j]))+self.var[j]).ljust(mayor[j]+len(self.var[j]),' ')
+  for i in range(len(self._matriz__matriz)):
+   for j in range(len(self._matriz__matriz[i])):
+    if self.isneg(self._matriz__matriz[i][j]):
+	 cadena+=('-' if j==0 else ' - ')+(str(abs(self._matriz__matriz[i][j]))+self.var[j]).ljust(mayor[j]+len(self.var[j]),' ')
     else:
-	 cadena+=(' ' if j==0 else ' + ')+(str(self.matriz[i][j])+self.var[j]).ljust(mayor[j]+len(self.var[j]),' ')
+	 cadena+=(' ' if j==0 else ' + ')+(str(self._matriz__matriz[i][j])+self.var[j]).ljust(mayor[j]+len(self.var[j]),' ')
    cadena+=' = '+str(self.resul[i][0])+'\n'
   return cadena
