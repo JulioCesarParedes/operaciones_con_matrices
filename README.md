@@ -23,7 +23,7 @@ Crear la matriz
 3 &nbsp;&nbsp;&nbsp;&nbsp; 5
 
 	>>> valores = [[2,4],[3,5]]
-	>>> matriz\_1 = matriz(valores)
+	>>> matriz_1 = matriz(valores)
 
 #### Visualizar la matriz con formato
 	>>> print matriz
@@ -42,7 +42,12 @@ Los tipos de datos compatibles son int, float, long e instancias de la clase mat
 
 **Ejemplo:**
 Suma de la fracción 1/2 más el numero entero 2
-	<pre><code>>>> print fraccion\_1 + 2<br/>5/2</code></pre>
+
+	>>> print fraccion_1 + 2
+	5/2
 	
 Guardar el resultado de la operación anterior en la variable fraccion\_2
-	<pre><code>>>> fraccion\_2 = fraccion\_1 + 2<br/>>>> print fraccion\_2<br/>5/2</code></pre>
+
+	>>> fraccion_2 = fraccion_1 + 2
+	>>> print fraccion_2
+	5/2
